@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/component/home.dart';
 import 'package:flutter_app/component/login.dart';
+import 'package:flutter_app/component/person.dart';
+import 'package:flutter_app/component/tab.dart';
 
 void main() {
   runApp(const NavigationApp());
@@ -18,7 +20,9 @@ class NavigationApp extends StatelessWidget {
       //...
       routes: <String, WidgetBuilder>{
         '/': (context) => const Login(),
+        '/tab': (context) => const Tabs(),
         '/b': (context) => const Home(),
+        '/c': (context) => const Persion(),
       },
       //...
     );
