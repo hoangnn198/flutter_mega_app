@@ -35,6 +35,7 @@ class Home extends StatelessWidget {
               tooltip: 'ADD',
               onPressed: () {
                 // handle the press
+                Navigator.of(context).pushNamed('/create');
               },
             ),
           ],
@@ -55,7 +56,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with {
   List<Data>? data;
   bool isLoading = true;
   @override
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     if (data != null) {
       return ListView.builder(
-        // itemCount: data.length ?? ,
+        itemCount: data?.length,
         itemBuilder: (context, index) {
           return CardCustom(
             item: data![index],

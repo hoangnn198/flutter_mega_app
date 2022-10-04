@@ -1,10 +1,12 @@
 // // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/component/create.dart';
 import 'package:flutter_app/component/home.dart';
 import 'package:flutter_app/component/login.dart';
 import 'package:flutter_app/component/person.dart';
 import 'package:flutter_app/component/tab.dart';
+import 'package:flutter_app/config/config.dart';
 
 void main() {
   runApp(const NavigationApp());
@@ -23,6 +25,7 @@ class NavigationApp extends StatelessWidget {
         '/tab': (context) => const Tabs(),
         '/b': (context) => const Home(),
         '/c': (context) => const Persion(),
+        '/create': (context) => const Create(),
       },
       //...
     );
