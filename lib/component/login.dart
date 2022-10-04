@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/api/loginAPI.dart';
+import 'package:flutter_app/config/config.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -28,9 +29,10 @@ class BodyLogin extends StatefulWidget {
 
 class _BodyLoginState extends State<BodyLogin> with TickerProviderStateMixin {
   bool isChecked = false;
-  String? username;
-  String? password;
+  String? username = 'hoangnn22';
+  String? password = '234234QWE!@#';
   bool isLoading = false;
+  bool showPassword = false;
   String? errorUsername;
   String? errorPassword;
 
@@ -43,7 +45,10 @@ class _BodyLoginState extends State<BodyLogin> with TickerProviderStateMixin {
   void onPressLogin() async {
     LoginAPI().login(username.toString(), password.toString()).then((value) => {
           if (value.resultCode == 1)
-            {Navigator.of(context).pushNamed('/tab')}
+            {
+              Navigator.of(context).pushNamed('/tab'),
+              userProfile.token = value.data!.token
+            }
           else
             {
               showDialog<String>(
@@ -200,22 +205,33 @@ class _BodyLoginState extends State<BodyLogin> with TickerProviderStateMixin {
                                       height: 12,
                                     ),
                                     TextField(
-                                      obscureText: true,
+                                      obscureText: !showPassword,
                                       decoration: InputDecoration(
                                         errorText: errorPassword,
                                         border: const OutlineInputBorder(),
                                         labelText: 'Mật khẩu',
+                                        suffixIcon: IconButton(
+                                          icon: Icon(showPassword
+                                              ? Icons.visibility_off
+                                              : Icons.visibility),
+                                          onPressed: () {
+                                            setState(() {
+                                              showPassword = !showPassword;
+                                            });
+                                          },
+                                        ),
                                       ),
                                       onChanged: (text) async {
                                         // ignore: unnecessary_null_comparison
                                         if (text != null) {
                                           setState(() {
-                                            password = text;
+                                            password = text == "" ? null : text;
                                             errorPassword = null;
                                           });
                                         } else {
                                           setState(() {
                                             password = null;
+                                            errorPassword = null;
                                           });
                                         }
                                       },
@@ -259,33 +275,36 @@ class _BodyLoginState extends State<BodyLogin> with TickerProviderStateMixin {
                                         minimumSize: Size(width - 48, 0),
                                       ),
                                       onPressed: () {
-                                        if (username != null &&
-                                            password != null) {
-                                          setState(() {
-                                            isLoading = true;
-                                          });
-                                          onPressLogin();
-                                        } else {
-                                          if (username == null &&
-                                              password == null) {
-                                            setState(() {
-                                              errorUsername =
-                                                  "Nhập tên đăng nhập";
-                                              errorPassword = "Nhập mật khẩu";
-                                            });
-                                          } else if (username == null) {
-                                            setState(() {
-                                              errorUsername =
-                                                  "Nhập tên đăng nhập";
-                                              errorUsername = null;
-                                            });
-                                          } else if (password == null) {
-                                            setState(() {
-                                              errorUsername = null;
-                                              errorPassword = "Nhập mật khẩu";
-                                            });
-                                          }
-                                        }
+                                        onPressLogin();
+                                        // print('${username} ${password}');
+                                        // if (username != null &&
+                                        //     password != null) {
+                                        //   setState(() {
+                                        //     isLoading = true;
+                                        //   });
+                                        //   onPressLogin();
+                                        // } else {
+                                        //   if (username == null &&
+                                        //       password == null) {
+                                        //     setState(() {
+                                        //       errorUsername =
+                                        //           "Nhập tên đăng nhập";
+                                        //       errorPassword = "Nhập mật khẩu";
+                                        //     });
+                                        //   } else if (username == null) {
+                                        //     setState(() {
+                                        //       print("username = null");
+                                        //       errorUsername =
+                                        //           "Nhập tên đăng nhập";
+                                        //       errorPassword = null;
+                                        //     });
+                                        //   } else if (password == null) {
+                                        //     setState(() {
+                                        //       errorUsername = null;
+                                        //       errorPassword = "Nhập mật khẩu";
+                                        //     });
+                                        //   }
+                                        // }
                                       },
                                       child: const Text(
                                         'Đăng nhập',

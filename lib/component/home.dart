@@ -1,116 +1,97 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-Future<Album> createAlbum(String title) async {
-  final response = await http.post(
-    Uri.parse('https://jsonplaceholder.typicode.com/albums'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'title': title,
-    }),
-  );
-
-  if (response.statusCode == 201) {
-    // If the server did return a 201 CREATED response,
-    // then parse the JSON.
-    return Album.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 201 CREATED response,
-    // then throw an exception.
-    throw Exception('Failed to create album.');
-  }
-}
-
-class Album {
-  final int id;
-  final String title;
-
-  const Album({required this.id, required this.title});
-
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
-      id: json['id'],
-      title: json['title'],
-    );
-  }
-}
+import 'package:flutter_app/api/loginAPI.dart';
+import 'package:flutter_app/model/getCourseModel.dart';
+import '../custom/Card.dart';
 
 void main() {
   runApp(const Home());
 }
 
-class Home extends StatefulWidget {
+class Home extends StatelessWidget {
   const Home({super.key});
-
-  @override
-  State<Home> createState() {
-    return _HomeState();
-  }
-}
-
-class _HomeState extends State<Home> {
-  final TextEditingController _controller = TextEditingController();
-  Future<Album>? _futureAlbum;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Create Data Example',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(backgroundColor: Colors.white),
+      // ignore: unnecessary_const
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Create Data Example'),
+          title: const Text('QUẢN LÝ KHÓA HỌC'),
+          backgroundColor: Colors.white,
+          // ignore: prefer_const_constructors
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(
+                Icons.add,
+                color: Colors.black,
+              ),
+              tooltip: 'ADD',
+              onPressed: () {
+                // handle the press
+              },
+            ),
+          ],
         ),
         body: Container(
-          alignment: Alignment.center,
           padding: const EdgeInsets.all(8.0),
-          child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+          child: const HomePage(),
         ),
       ),
     );
   }
+}
 
-  Column buildColumn() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        TextField(
-          controller: _controller,
-          decoration: const InputDecoration(hintText: 'Enter Title'),
-        ),
-        ElevatedButton(
-          onPressed: () {
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Data>? data;
+  bool isLoading = true;
+  @override
+  void initState() {
+    GetCourseAPI().getCourse().then(
+          (value) => {
             setState(() {
-              _futureAlbum = createAlbum(_controller.text);
-            });
+              data = value.data;
+            })
           },
-          child: const Text('Create Data'),
-        ),
-      ],
-    );
+        );
+    // TODO: implement initState
+    super.initState();
   }
 
-  FutureBuilder<Album> buildFutureBuilder() {
-    return FutureBuilder<Album>(
-      future: _futureAlbum,
-      builder: (context, snapshot) {
-        var data = snapshot.data!.id;
-        print('data $data');
-        if (snapshot.hasData) {
-          return Text(snapshot.data!.title);
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        return const CircularProgressIndicator();
-      },
-    );
+  @override
+  Widget build(BuildContext context) {
+    if (data != null) {
+      return ListView.builder(
+        // itemCount: data.length ?? ,
+        itemBuilder: (context, index) {
+          return CardCustom(
+            item: data![index],
+          );
+        },
+      );
+    } else {
+      return Stack(
+        children: [
+          Container(
+            child: isLoading == true
+                ? const Center(child: CircularProgressIndicator())
+                : null,
+          ),
+        ],
+      );
+    }
   }
 }
