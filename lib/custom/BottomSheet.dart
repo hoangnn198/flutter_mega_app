@@ -5,15 +5,17 @@ class BottomSheetCustom extends StatefulWidget {
   const BottomSheetCustom({
     super.key,
     this.label,
-    required this.data,
+    this.data,
     this.onPressClose,
     this.height,
+    this.value,
     required this.onPressedItem,
   });
 
   final dynamic height;
   final dynamic label;
-  final List<String> data;
+  final dynamic value;
+  final data;
   final dynamic onPressClose;
   final Function onPressedItem;
 
@@ -53,7 +55,7 @@ class _BottomSheetCustomState extends State<BottomSheetCustom> {
                       itemBuilder: (_, index) {
                         return InkWell(
                           onTap: () {
-                            widget.onPressedItem(widget.data[index]);
+                            widget.onPressedItem(widget.data[index], index);
                             Navigator.pop(context);
                           },
                           child: Container(
@@ -68,7 +70,7 @@ class _BottomSheetCustomState extends State<BottomSheetCustom> {
                                   bottom: BorderSide(
                                       color: Theme.of(context).dividerColor)),
                             ),
-                            child: Text("data ${widget.data[index]}"),
+                            child: Text('${widget.data[index].label}'),
                           ),
                         );
                       },
@@ -84,9 +86,10 @@ class _BottomSheetCustomState extends State<BottomSheetCustom> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.data);
+    print('widget data ${widget.data}');
     return Select(
       label: widget.label ?? "Open BottomSheet",
+      value: widget.value,
       onPressed: () {
         onPressModal(context, widget.data);
       },

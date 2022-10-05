@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/api/getBuilding.dart';
 import 'package:flutter_app/custom/BottomSheet.dart';
 import 'package:flutter_app/custom/DatePicker.dart';
+import 'package:flutter_app/model/buildingRoomModel.dart';
 import 'package:intl/intl.dart';
 
 void main() {
@@ -47,25 +49,35 @@ class BodyCreate extends StatefulWidget {
 class _BodyCreateState extends State<BodyCreate> {
   dynamic? fromTime;
   dynamic? toTime;
-  List<String> data = [
-    "A",
-    "B",
-    "C",
-    "A",
-    "B",
-    "C",
-    "A",
-    "C",
-    "C",
-    "A",
-    "B",
-    "C",
-    "A",
-    "C",
-    "C",
-    "A",
-    "BBB",
-  ];
+  String? buidingName;
+  dynamic indexSelectedBuilding;
+  String? idBuiding;
+  String? roomName;
+  String? idRoom;
+  List<Data>? dataBuilding;
+
+  @override
+  void initState() {
+    getBuildingAPI()
+        .getBuilding()
+        // ignore: avoid_print
+        .then(
+          (value) => {
+            print('value ${value.resultCode}'),
+            if (value.resultCode == 1)
+              {
+                setState(
+                  () => {
+                    // dataBuilding = value.data,
+                  },
+                ),
+              }
+          },
+        );
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = (MediaQuery.of(context).size.width);
@@ -149,10 +161,34 @@ class _BodyCreateState extends State<BodyCreate> {
             ),
             BottomSheetCustom(
               label: 'Chọn tòa nhà',
-              data: data,
+              value: buidingName,
+              data: dataBuilding,
               onPressClose: () {},
-              onPressedItem: (value) {
-                print(value);
+              onPressedItem: (value, index) {
+                setState(() {
+                  buidingName = value.buildingName;
+                  idBuiding = value.value;
+                  indexSelectedBuilding = index;
+                  roomName = null;
+                  idRoom = null;
+                });
+              },
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            BottomSheetCustom(
+              label: 'Chọn phòng',
+              value: roomName,
+              data: dataBuilding != null
+                  ? dataBuilding![indexSelectedBuilding ?? 0].room
+                  : null,
+              onPressClose: () {},
+              onPressedItem: (value, index) {
+                setState(() {
+                  roomName = value.label;
+                  idRoom = value.value;
+                });
               },
             ),
           ],
